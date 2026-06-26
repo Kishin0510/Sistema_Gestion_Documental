@@ -26,11 +26,18 @@ app.use(session({
 
 // ── Rutas ────────────────────────────────────────
 app.use('/', require('./routes/auth.routes'))
+app.use('/vehiculos', require('./routes/vehicles.routes'))
+app.use('/vehiculos/:vehiculoId/documentos', require('./routes/documents.routes'))
+app.use('/logs', require('./routes/logs.routes'))    // ← nuevo
 
 // ── Ruta 404 ─────────────────────────────────────
 app.use((req, res) => {
   res.status(404).send('<h1>404 - Página no encontrada</h1>')
 })
+
+// —— Tarea Programada ————————————————————————————————————
+require('./services/tasks/alertaVencimiento')
+console.log('Tarea de alertas programada (08:00 AM diario)')
 
 // ── Iniciar servidor ─────────────────────────────
 const PORT = process.env.PORT || 3000

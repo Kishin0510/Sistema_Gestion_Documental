@@ -1,0 +1,29 @@
+<%
+  const esVencido  = a.diff < 0
+  const esProximo  = a.diff >= 0 && a.diff <= 30
+  const cardClass  = esVencido ? 'card-vencido' : esProximo ? 'card-proximo' : 'card-advertencia'
+%>
+<div class="alerta-card <%= cardClass %>">
+  <div class="alerta-card-info">
+    <strong><%= a.nombre %></strong>
+    <span>
+      🚗 <a href="/vehiculos/<%= a.vehiculo_id %>/documentos">
+        <%= a.patente %> — <%= a.marca %> <%= a.modelo %>
+      </a>
+    </span>
+    <span>
+      📅 Vence: <%= new Date(a.fecha_vencimiento).toLocaleDateString('es-CL') %>
+    </span>
+  </div>
+  <div class="alerta-card-estado">
+    <% if (esVencido) { %>
+      <span class="badge-danger">Venció hace <%= Math.abs(a.diff) %> días</span>
+    <% } else { %>
+      <span class="badge-warning">Vence en <%= a.diff %> días</span>
+    <% } %>
+    <a href="/vehiculos/<%= a.vehiculo_id %>/documentos"
+       class="btn btn-sm btn-info" style="margin-top:.5rem;">
+      Ver documentos
+    </a>
+  </div>
+</div>

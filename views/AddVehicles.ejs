@@ -1,0 +1,74 @@
+<%- include('partials/header', { title: vehiculo ? 'Editar Vehículo' : 'Agregar Vehículo' }) %>
+<%- include('partials/navbar') %>
+
+<main class="container">
+  <div class="page-header">
+    <h1><%= vehiculo ? '✏️ Editar Vehículo' : '🚗 Agregar Vehículo' %></h1>
+    <a href="/vehiculos" class="btn btn-secondary">← Volver</a>
+  </div>
+
+  <% if (error) { %>
+    <div class="alert alert-error"><%= error %></div>
+  <% } %>
+
+  <div class="form-card">
+    <form method="POST"
+          action="<%= vehiculo ? '/vehiculos/editar/' + vehiculo.id : '/vehiculos/agregar' %>">
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Patente *</label>
+          <input type="text" name="patente"
+                 value="<%= vehiculo ? vehiculo.patente : '' %>"
+                 placeholder="ABCD12" required
+                 style="text-transform:uppercase" />
+        </div>
+        <div class="form-group">
+          <label>Responsable</label>
+          <input type="text" name="responsable"
+                 value="<%= vehiculo ? vehiculo.responsable : '' %>"
+                 placeholder="Nombre del conductor o encargado" />
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Marca *</label>
+          <input type="text" name="marca"
+                 value="<%= vehiculo ? vehiculo.marca : '' %>"
+                 placeholder="Toyota" required />
+        </div>
+        <div class="form-group">
+          <label>Modelo *</label>
+          <input type="text" name="modelo"
+                 value="<%= vehiculo ? vehiculo.modelo : '' %>"
+                 placeholder="Hilux" required />
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Año</label>
+          <input type="number" name="anio"
+                 value="<%= vehiculo ? vehiculo.anio : '' %>"
+                 placeholder="2024" min="1990" max="2030" />
+        </div>
+        <div class="form-group">
+          <label>Color</label>
+          <input type="text" name="color"
+                 value="<%= vehiculo ? vehiculo.color : '' %>"
+                 placeholder="Blanco" />
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary">
+          <%= vehiculo ? '💾 Guardar cambios' : '➕ Agregar vehículo' %>
+        </button>
+      </div>
+
+    </form>
+  </div>
+</main>
+
+<%- include('partials/footer') %>

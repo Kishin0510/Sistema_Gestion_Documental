@@ -1,12 +1,16 @@
 <nav class="navbar">
   <div class="navbar-brand">🚗 Sistema Gestión</div>
+
   <ul class="navbar-links">
     <li><a href="/">Inicio</a></li>
     <li><a href="/vehiculos">Vehículos</a></li>
-    <li><a href="/documentos">Documentos</a></li>
+    <% if (user.rol === 'admin') { %>
+      <li><a href="/logs">📋 Logs</a></li>
+    <% } %>
   </ul>
+
   <div class="navbar-user">
-    <span>👤 <%= user.nombre %></span>
+    <span>👤 <%= user.nombre %> — <small><%= user.rol %></small></span>
     <a href="/logout" class="btn-logout">Salir</a>
   </div>
 </nav>

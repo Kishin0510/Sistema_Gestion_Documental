@@ -4,19 +4,99 @@
 <main class="container">
   <h1>Bienvenido, <%= user.nombre %> 👋</h1>
 
+  <!-- Alertas — solo aparece si hay documentos por vencer -->
+  <% if (alertas && alertas.length > 0) { %>
+    <%
+      const vencidos = alertas.filter(a => a.diff < 0)
+      const proximos = alertas.filter(a => a.diff >= 0 && a.diff <= 30)
+      const advertencia = alertas.filter(a => a.diff > 30)
+    %>
+
+    <div class="alertas-home">
+      <h2 class="alertas-home-titulo">
+        🔔 Alertas de vencimiento
+        <span class="badge-danger"><%= alertas.length %></span>
+      </h2>
+
+      <!-- Vencidos -->
+      <% if (vencidos.length > 0) { %>
+        <% vencidos.forEach(a => { %>
+          <div class="alerta-card card-vencido">
+            <div class="alerta-card-info">
+              <strong><%= a.nombre %></strong>
+              <span>🚗 <%= a.patente %> — <%= a.marca %> <%= a.modelo %></span>
+              <span>📅 Venció el <%= new Date(a.fecha_vencimiento).toLocaleDateString('es-CL') %></span>
+            </div>
+            <div class="alerta-card-estado">
+              <span class="badge-danger">Venció hace <%= Math.abs(a.diff) %> días</span>
+              <a href="/vehiculos/<%= a.vehiculo_id %>/documentos"
+                 class="btn btn-sm btn-info" style="margin-top:.5rem;">
+                Ver documentos
+              </a>
+            </div>
+          </div>
+        <% }) %>
+      <% } %>
+
+      <!-- Próximos a vencer -->
+      <% if (proximos.length > 0) { %>
+        <% proximos.forEach(a => { %>
+          <div class="alerta-card card-proximo">
+            <div class="alerta-card-info">
+              <strong><%= a.nombre %></strong>
+              <span>🚗 <%= a.patente %> — <%= a.marca %> <%= a.modelo %></span>
+              <span>📅 Vence el <%= new Date(a.fecha_vencimiento).toLocaleDateString('es-CL') %></span>
+            </div>
+            <div class="alerta-card-estado">
+              <span class="badge-warning">Vence en <%= a.diff %> días</span>
+              <a href="/vehiculos/<%= a.vehiculo_id %>/documentos"
+                 class="btn btn-sm btn-info" style="margin-top:.5rem;">
+                Ver documentos
+              </a>
+            </div>
+          </div>
+        <% }) %>
+      <% } %>
+
+      <!-- Advertencia 30-60 días -->
+      <% if (advertencia.length > 0) { %>
+        <% advertencia.forEach(a => { %>
+          <div class="alerta-card card-advertencia">
+            <div class="alerta-card-info">
+              <strong><%= a.nombre %></strong>
+              <span>🚗 <%= a.patente %> — <%= a.marca %> <%= a.modelo %></span>
+              <span>📅 Vence el <%= new Date(a.fecha_vencimiento).toLocaleDateString('es-CL') %></span>
+            </div>
+            <div class="alerta-card-estado">
+              <span class="badge-warning">Vence en <%= a.diff %> días</span>
+              <a href="/vehiculos/<%= a.vehiculo_id %>/documentos"
+                 class="btn btn-sm btn-info" style="margin-top:.5rem;">
+                Ver documentos
+              </a>
+            </div>
+          </div>
+        <% }) %>
+      <% } %>
+
+    </div>
+  <% } %>
+
+  <!-- Cards de navegación -->
   <div class="cards-grid">
     <div class="card">
       <h2>🚗 Vehículos</h2>
       <p>Administra los vehículos de la empresa</p>
       <a href="/vehiculos" class="btn btn-primary">Ver vehículos</a>
     </div>
-
-    <div class="card">
-      <h2>📄 Documentos</h2>
-      <p>Gestiona documentos vinculados</p>
-      <a href="/documentos" class="btn btn-primary">Ver documentos</a>
-    </div>
+    <% if (user.rol === 'admin') { %>
+      <div class="card">
+        <h2>📋 Logs</h2>
+        <p>Revisa el historial de cambios del sistema</p>
+        <a href="/logs" class="btn btn-primary">Ver logs</a>
+      </div>
+    <% } %>
   </div>
+
 </main>
 
 <%- include('partials/footer') %>

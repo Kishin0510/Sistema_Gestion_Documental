@@ -1,0 +1,101 @@
+<%- include('partials/header', { title: 'Documentos - ' + vehiculo.patente }) %>
+<%- include('partials/navbar') %>
+
+<main class="container">
+
+  <!-- Header con datos del vehículo -->
+  <div class="vehiculo-header">
+    <div>
+      <a href="/vehiculos" class="link-back">← Volver a vehículos</a>
+      <h1>
+        📄 Documentos —
+        <span class="patente"><%= vehiculo.patente %></span>
+        <small><%= vehiculo.marca %> <%= vehiculo.modelo %> <%= vehiculo.anio || '' %></small>
+      </h1>
+    </div>
+    <% if (user.rol === 'admin' || user.rol === 'editor') { %>
+      <a href="/vehiculos/<%= vehiculo.id %>/documentos/agregar"
+         class="btn btn-primary">
+        + Subir Documento
+      </a>
+    <% } %>
+  </div>
+
+  <!-- Tabla documentos -->
+  <% if (documentos.length === 0) { %>
+    <div class="empty-state">
+      <p>Este vehículo no tiene documentos registrados.</p>
+      <% if (user.rol === 'admin' || user.rol === 'editor') { %>
+        <a href="/vehiculos/<%= vehiculo.id %>/documentos/agregar"
+           class="btn btn-primary" style="margin-top:1rem">
+          + Subir primer documento
+        </a>
+      <% } %>
+    </div>
+  <% } else { %>
+    <table class="tabla">
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Tipo</th>
+          <th>Emisión</th>
+          <th>Vencimiento</th>
+          <th>Subido por</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% documentos.forEach(d => { %>
+          <%
+            const hoy   = new Date()
+            const vence = d.fecha_vencimiento ? new Date(d.fecha_vencimiento) : null
+            const diff  = vence ? Math.ceil((vence - hoy) / (1000*60*60*24)) : null
+            let rowClass = ''
+            let icon     = ''
+            if (diff !== null) {
+              if (diff < 0)        { rowClass = 'vencido';  icon = '🔴' }
+              else if (diff <= 30) { rowClass = 'proximo';  icon = '⚠️' }
+              else                 { rowClass = 'vigente';  icon = '✅' }
+            }
+          %>
+          <tr class="<%= rowClass %>">
+            <td><%= d.nombre %></td>
+            <td><%= d.tipo %></td>
+            <td>
+              <%= d.fecha_emision
+                ? new Date(d.fecha_emision).toLocaleDateString('es-CL')
+                : '—' %>
+            </td>
+            <td>
+              <%= icon %>
+              <%= vence ? vence.toLocaleDateString('es-CL') : '—' %>
+              <% if (diff !== null && diff >= 0 && diff <= 30) { %>
+                <span class="badge-warning">Vence en <%= diff %> días</span>
+              <% } %>
+              <% if (diff !== null && diff < 0) { %>
+                <span class="badge-danger">Venció hace <%= Math.abs(diff) %> días</span>
+              <% } %>
+            </td>
+            <td><%= d.subido_por || '—' %></td>
+            <td class="acciones">
+              <a href="/vehiculos/<%= vehiculo.id %>/documentos/descargar/<%= d.id %>"
+                 class="btn btn-sm btn-info">
+                ⬇️ Descargar
+              </a>
+              <% if (user.rol === 'admin') { %>
+                <form method="POST"
+                      action="/vehiculos/<%= vehiculo.id %>/documentos/eliminar/<%= d.id %>"
+                      onsubmit="return confirm('¿Eliminar <%= d.nombre %>?')">
+                  <button class="btn btn-sm btn-danger">🗑️ Eliminar</button>
+                </form>
+              <% } %>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  <% } %>
+
+</main>
+
+<%- include('partials/footer') %>

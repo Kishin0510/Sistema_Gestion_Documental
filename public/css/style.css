@@ -45,3 +45,98 @@ body {
 
 /* Link */
 .link-forgot     { display: block; text-align: center; margin-top: 1rem; color: #3b82f6; text-decoration: none; font-size: .9rem; }
+
+/* Tablas */
+.tabla            { width: 100%; border-collapse: collapse; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+.tabla thead      { background: #1e3a5f; color: white; }
+.tabla th, .tabla td { padding: .85rem 1rem; text-align: left; }
+.tabla tbody tr:hover { background: #f0f4ff; }
+.tabla tbody tr   { border-bottom: 1px solid #eee; }
+
+/* Botones tamaño pequeño */
+.btn-sm           { padding: .3rem .7rem; font-size: .85rem; }
+.btn-warning      { background: #f59e0b; color: white; }
+.btn-warning:hover{ background: #d97706; }
+.btn-danger       { background: #ef4444; color: white; }
+.btn-danger:hover { background: #dc2626; }
+.btn-info         { background: #06b6d4; color: white; }
+.btn-info:hover   { background: #0891b2; }
+.btn-secondary    { background: #6b7280; color: white; }
+.btn-secondary:hover { background: #4b5563; }
+
+/* Acciones en tabla */
+.acciones         { display: flex; gap: .4rem; align-items: center; flex-wrap: wrap; }
+.acciones form    { margin: 0; }
+
+/* Page header */
+.page-header      { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+
+/* Filtros */
+.filtros          { margin-bottom: 1.2rem; }
+.filtros select   { padding: .5rem .8rem; border: 1px solid #ddd; border-radius: 4px; font-size: 1rem; }
+
+/* Formulario card */
+.form-card        { background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); max-width: 700px; }
+.form-row         { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+.form-group select{ width: 100%; padding: .6rem; border: 1px solid #ddd; border-radius: 4px; font-size: 1rem; }
+.form-actions     { margin-top: 1.5rem; }
+.form-actions .btn{ width: auto; }
+
+/* Empty state */
+.empty-state      { text-align: center; padding: 3rem; color: #999; background: white; border-radius: 8px; }
+
+/* Estados de vencimiento */
+tr.vencido  { background: #fff1f1 !important; }
+tr.proximo  { background: #fffbeb !important; }
+tr.vigente  { background: #f0fdf4 !important; }
+
+/* Badges */
+.badge-warning { background: #fef3c7; color: #92400e; padding: .2rem .5rem; border-radius: 4px; font-size: .8rem; }
+.badge-danger  { background: #fee2e2; color: #991b1b; padding: .2rem .5rem; border-radius: 4px; font-size: .8rem; }
+
+/* Patente destacada */
+.patente { font-weight: 700; color: #1e3a5f; font-size: 1.1rem; }
+.page-header small { color: #666; font-size: .9rem; margin-left: .5rem; }
+
+/* File upload */
+.file-upload      { display: flex; align-items: center; gap: 1rem; }
+.file-upload input{ width: auto; }
+.file-name        { color: #666; font-size: .9rem; }
+
+/* Filtros múltiples */
+.filtros form     { display: flex; gap: 1rem; flex-wrap: wrap; }
+.filtros select   { padding: .5rem .8rem; border: 1px solid #ddd; border-radius: 4px; font-size: .95rem; }
+
+/* Logs */
+.badge-tabla  { background: #e0e7ff; color: #3730a3; padding: .2rem .6rem; border-radius: 4px; font-size: .85rem; }
+.badge-info   { background: #dbeafe; color: #1e40af; padding: .3rem .8rem; border-radius: 4px; font-size: .9rem; }
+
+/* Alertas secciones */
+.alerta-seccion   { margin-bottom: 2rem; }
+.alerta-titulo    { font-size: 1.1rem; margin-bottom: 1rem; padding: .5rem 1rem; border-radius: 6px; }
+.alerta-titulo.vencido     { background: #fee2e2; color: #991b1b; }
+.alerta-titulo.proximo     { background: #fef3c7; color: #92400e; }
+.alerta-titulo.advertencia { background: #fefce8; color: #854d0e; }
+
+/* Cards de alerta */
+.alerta-card        { display: flex; justify-content: space-between; align-items: center;
+                      padding: 1rem 1.2rem; border-radius: 8px; margin-bottom: .8rem;
+                      border-left: 4px solid; }
+.card-vencido       { background: #fff1f1; border-color: #ef4444; }
+.card-proximo       { background: #fffbeb; border-color: #f59e0b; }
+.card-advertencia   { background: #fefce8; border-color: #eab308; }
+.alerta-card-info   { display: flex; flex-direction: column; gap: .3rem; }
+.alerta-card-info a { color: #1e3a5f; font-weight: 600; }
+.alerta-card-estado { display: flex; flex-direction: column; align-items: flex-end; gap: .4rem; }
+
+.badge-accion         { padding:.2rem .6rem; border-radius:4px; font-size:.85rem; font-weight:600; }
+.accion-login         { background:#dbeafe; color:#3b82f6; }
+.accion-insert        { background:#d1fae5; color:#10b981; }
+.accion-update        { background:#fef3c7; color:#f59e0b; }
+.accion-delete        { background:#fee2e2; color:#ef4444; }
+.accion-default       { background:#f3f4f6; color:#6b7280; }
+
+/* Bloque de alertas en Home */
+.alertas-home         { margin: 1.5rem 0 2rem; }
+.alertas-home-titulo  { font-size: 1.1rem; margin-bottom: 1rem;
+                        display: flex; align-items: center; gap: .6rem; }

@@ -1,0 +1,61 @@
+<%- include('partials/header', { title: 'Vehículos' }) %>
+<%- include('partials/navbar') %>
+
+<main class="container">
+  <div class="page-header">
+    <h1>🚗 Vehículos</h1>
+    <% if (user.rol === 'admin' || user.rol === 'editor') { %>
+      <a href="/vehiculos/agregar" class="btn btn-primary">+ Agregar Vehículo</a>
+    <% } %>
+  </div>
+
+  <% if (vehiculos.length === 0) { %>
+    <div class="empty-state">
+      <p>No hay vehículos registrados.</p>
+    </div>
+  <% } else { %>
+    <table class="tabla">
+      <thead>
+        <tr>
+          <th>Patente</th>
+          <th>Marca</th>
+          <th>Modelo</th>
+          <th>Año</th>
+          <th>Color</th>
+          <th>Responsable</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% vehiculos.forEach(v => { %>
+          <tr>
+            <td><strong><%= v.patente %></strong></td>
+            <td><%= v.marca %></td>
+            <td><%= v.modelo %></td>
+            <td><%= v.anio || '—' %></td>
+            <td><%= v.color || '—' %></td>
+            <td><%= v.responsable || '—' %></td>
+            <td class="acciones">
+              <a href="/vehiculos/<%= v.id %>/documentos" class="btn btn-sm btn-info">
+                📄 Documentos
+              </a>
+              <% if (user.rol === 'admin' || user.rol === 'editor') { %>
+                <a href="/vehiculos/editar/<%= v.id %>" class="btn btn-sm btn-warning">
+                  ✏️ Editar
+                </a>
+              <% } %>
+              <% if (user.rol === 'admin') { %>
+                <form method="POST" action="/vehiculos/eliminar/<%= v.id %>"
+                      onsubmit="return confirm('¿Eliminar vehículo <%= v.patente %>?')">
+                  <button class="btn btn-sm btn-danger">🗑️ Eliminar</button>
+                </form>
+              <% } %>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  <% } %>
+</main>
+
+<%- include('partials/footer') %>

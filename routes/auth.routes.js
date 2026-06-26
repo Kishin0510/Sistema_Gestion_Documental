@@ -1,7 +1,8 @@
 const router = require('express').Router()
 const bcrypt = require('bcryptjs')
 const db     = require('../db')
-const auth   = require('../middlewares/auth.middleware')
+const { verificarSesion } = require('../middlewares/auth.middleware')
+
 
 // ── GET /login ───────────────────────────────────
 router.get('/login', (req, res) => {
@@ -76,6 +77,31 @@ router.get('/logout', (req, res) => {
 })
 
 // ── GET / ────────────────────────────────────────
-router.get('/', auth, (req, res) => res.render('Home'))
+router.get('/', verificarSesion, async (req, res) => {
+  try {
+    const { rows: alertas } = await db.query(`
+      SELECT
+        d.id,
+        d.nombre,
+        d.fecha_vencimiento,
+        v.id     AS vehiculo_id,
+        v.patente,
+        v.marca,
+        v.modelo,
+        CEIL(EXTRACT(EPOCH FROM (d.fecha_vencimiento - NOW())) / 86400) AS diff
+      FROM documentos d
+      JOIN vehiculos v ON v.id = d.vehiculo_id
+      WHERE d.fecha_vencimiento IS NOT NULL
+        AND d.fecha_vencimiento <= NOW() + INTERVAL '60 days'
+      ORDER BY d.fecha_vencimiento ASC
+    `)
+
+    res.render('Home', { alertas })
+
+  } catch (err) {
+    console.error(err)
+    res.render('Home', { alertas: [] })
+  }
+})
 
 module.exports = router

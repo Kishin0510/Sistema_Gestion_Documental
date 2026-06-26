@@ -1,0 +1,90 @@
+<%- include('partials/header', { title: 'Subir Documento' }) %>
+<%- include('partials/navbar') %>
+
+<main class="container">
+  <div class="page-header">
+    <div>
+      <a href="/vehiculos/<%= vehiculo.id %>/documentos" class="link-back">
+        ← Volver a documentos
+      </a>
+      <h1>
+        📄 Subir Documento —
+        <span class="patente"><%= vehiculo.patente %></span>
+        <small><%= vehiculo.marca %> <%= vehiculo.modelo %></small>
+      </h1>
+    </div>
+  </div>
+
+  <% if (error) { %>
+    <div class="alert alert-error"><%= error %></div>
+  <% } %>
+
+  <div class="form-card">
+    <form method="POST"
+          action="/vehiculos/<%= vehiculo.id %>/documentos/agregar"
+          enctype="multipart/form-data">
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Nombre del documento *</label>
+          <input type="text" name="nombre"
+                 placeholder="Ej: Seguro 2024"
+                 required />
+        </div>
+        <div class="form-group">
+          <label>Tipo de documento *</label>
+          <select name="tipo_id" required>
+            <option value="">— Selecciona tipo —</option>
+            <% tipos.forEach(t => { %>
+              <option value="<%= t.id %>"><%= t.nombre %></option>
+            <% }) %>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Fecha de emisión</label>
+          <input type="date" name="fecha_emision" />
+        </div>
+        <div class="form-group">
+          <label>Fecha de vencimiento</label>
+          <input type="date" name="fecha_vencimiento" />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Archivo * (PDF, JPG o PNG — máx. 10MB)</label>
+        <div class="file-upload">
+          <input type="file" name="archivo"
+                 accept=".pdf,.jpg,.jpeg,.png"
+                 required
+                 onchange="mostrarNombre(this)" />
+          <span id="fileName" class="file-name">
+            Ningún archivo seleccionado
+          </span>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary">
+          ⬆️ Subir documento
+        </button>
+        <a href="/vehiculos/<%= vehiculo.id %>/documentos"
+           class="btn btn-secondary">
+          Cancelar
+        </a>
+      </div>
+
+    </form>
+  </div>
+</main>
+
+<script>
+  function mostrarNombre(input) {
+    document.getElementById('fileName').textContent =
+      input.files[0] ? input.files[0].name : 'Ningún archivo seleccionado'
+  }
+</script>
+
+<%- include('partials/footer') %>

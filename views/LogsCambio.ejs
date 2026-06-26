@@ -1,0 +1,98 @@
+<%- include('partials/header', { title: 'Logs de Cambios' }) %>
+<%- include('partials/navbar') %>
+
+<main class="container">
+
+  <div class="page-header">
+    <h1>📋 Logs de Cambios</h1>
+    <span class="badge-info"><%= logs.length %> registros</span>
+  </div>
+
+  <!-- Filtros -->
+  <div class="filtros" style="margin-bottom:1.5rem;">
+    <form method="GET" action="/logs" style="display:flex; gap:1rem; flex-wrap:wrap;">
+
+      <select name="tabla" onchange="this.form.submit()">
+        <option value="">— Todas las tablas —</option>
+        <% ['usuarios','vehiculos','documentos','clientes'].forEach(t => { %>
+          <option value="<%= t %>" <%= filtros.tabla === t ? 'selected' : '' %>>
+            <%= t %>
+          </option>
+        <% }) %>
+      </select>
+
+      <select name="accion" onchange="this.form.submit()">
+        <option value="">— Todas las acciones —</option>
+        <% ['LOGIN','INSERT','UPDATE','DELETE'].forEach(a => { %>
+          <option value="<%= a %>" <%= filtros.accion === a ? 'selected' : '' %>>
+            <%= a %>
+          </option>
+        <% }) %>
+      </select>
+
+      <input type="date" name="desde"
+             value="<%= filtros.desde || '' %>"
+             onchange="this.form.submit()" />
+
+      <input type="date" name="hasta"
+             value="<%= filtros.hasta || '' %>"
+             onchange="this.form.submit()" />
+
+      <a href="/logs" class="btn btn-secondary btn-sm">Limpiar filtros</a>
+
+    </form>
+  </div>
+
+  <!-- Tabla -->
+  <% if (logs.length === 0) { %>
+    <div class="empty-state">
+      <p>No hay registros que coincidan con los filtros.</p>
+    </div>
+  <% } else { %>
+    <table class="tabla">
+      <thead>
+        <tr>
+          <th>Fecha</th>
+          <th>Usuario</th>
+          <th>Tabla</th>
+          <th>Acción</th>
+          <th>Descripción</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% logs.forEach(log => { %>
+          <tr>
+            <td style="white-space:nowrap;">
+              <%= new Date(log.created_at).toLocaleString('es-CL') %>
+            </td>
+            <td>
+              <%= log.usuario || '—' %>
+              <% if (log.usuario_email) { %>
+                <br><small style="color:#999;"><%= log.usuario_email %></small>
+              <% } %>
+            </td>
+            <td>
+              <span class="badge-tabla"><%= log.tabla %></span>
+            </td>
+            <td>
+                <%
+                    let claseAccion = 'accion-default'
+                    if (log.accion === 'LOGIN')  claseAccion = 'accion-login'
+                    if (log.accion === 'INSERT') claseAccion = 'accion-insert'
+                    if (log.accion === 'UPDATE') claseAccion = 'accion-update'
+                    if (log.accion === 'DELETE') claseAccion = 'accion-delete'
+                %>
+                <span class="badge-accion <%= claseAccion %>">
+                    <%= log.accion %>
+                </span>
+            </td>
+            <td><%= log.descripcion %></td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  <% } %>
+
+</main>
+
+<%- include('partials/footer') %>
