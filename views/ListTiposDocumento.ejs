@@ -1,0 +1,111 @@
+<%- include('partials/header', { title: 'Tipos de Documento' }) %>
+<%- include('partials/navbar') %>
+
+<main class="container">
+
+  <div class="page-header">
+    <div>
+      <a href="/vehiculos" class="link-back">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+        Volver a vehículos
+      </a>
+      <h1>🏷️ Tipos de Documento</h1>
+    </div>
+    <span class="badge-info"><%= tipos.length %> tipos</span>
+  </div>
+
+  <% if (error) { %>
+    <div class="alert alert-error"><%= error %></div>
+  <% } %>
+
+  <!-- Formulario para agregar nuevo tipo -->
+  <div class="form-card" style="margin-bottom:1.75rem;">
+    <form method="POST" action="/documentos/tipos/agregar" style="display:flex; gap:1rem; align-items:flex-end; flex-wrap:wrap;">
+      <div class="form-group" style="flex:1; min-width:240px; margin-bottom:0;">
+        <label>Nombre del nuevo tipo *</label>
+        <input type="text" name="nombre"
+               placeholder="Ej: Certificado de Inspección"
+               required />
+      </div>
+      <div class="form-actions" style="margin-top:0;">
+        <button type="submit" class="btn btn-primary">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Agregar tipo
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Tabla de tipos existentes -->
+  <% if (tipos.length === 0) { %>
+    <div class="empty-state">
+      <p>Aún no hay tipos de documento registrados.</p>
+    </div>
+  <% } else { %>
+    <table class="tabla">
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Documentos asociados</th>
+          <th class="th-acciones">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% tipos.forEach(t => { %>
+          <tr>
+            <td>
+              <!-- Vista normal -->
+              <span id="nombre-view-<%= t.id %>"><%= t.nombre %></span>
+
+              <!-- Formulario de edición (oculto por defecto) -->
+              <form id="nombre-edit-<%= t.id %>"
+                    method="POST"
+                    action="/documentos/tipos/editar/<%= t.id %>"
+                    style="display:none; gap:.4rem; align-items:center;">
+                <input type="text" name="nombre" value="<%= t.nombre %>"
+                       required style="padding:.3rem .5rem; border:1px solid #ddd; border-radius:4px;" />
+                <button type="submit" class="btn btn-sm btn-primary">Guardar</button>
+                <button type="button" class="btn btn-sm btn-secondary"
+                        onclick="cancelarEdicion('<%= t.id %>')">Cancelar</button>
+              </form>
+            </td>
+            <td>
+              <% if (t.documentos_count > 0) { %>
+                <span class="badge-tabla"><%= t.documentos_count %> documento<%= t.documentos_count === 1 ? '' : 's' %></span>
+              <% } else { %>
+                <span style="color:#999;">—</span>
+              <% } %>
+            </td>
+            <td class="acciones">
+              <button type="button" class="btn btn-sm btn-secondary"
+                      onclick="editarTipo('<%= t.id %>')">
+                ✏️ Editar
+              </button>
+              <form method="POST"
+                    action="/documentos/tipos/eliminar/<%= t.id %>"
+                    onsubmit="return confirm('¿Eliminar el tipo &quot;<%= t.nombre %>&quot;?<%= t.documentos_count > 0 ? (' Está usado en ' + t.documentos_count + ' documento(s); quedarán sin tipo asignado.') : '' %>')">
+                <button class="btn btn-sm btn-danger">🗑️ Eliminar</button>
+              </form>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  <% } %>
+
+</main>
+
+<script>
+  function editarTipo(id) {
+    document.getElementById('nombre-view-' + id).style.display = 'none'
+    const form = document.getElementById('nombre-edit-' + id)
+    form.style.display = 'flex'
+  }
+
+  function cancelarEdicion(id) {
+    document.getElementById('nombre-view-' + id).style.display = 'inline'
+    document.getElementById('nombre-edit-' + id).style.display = 'none'
+  }
+</script>
+
+<%- include('partials/footer') %>

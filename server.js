@@ -28,6 +28,7 @@ app.use(session({
 app.use('/', require('./routes/auth.routes'))
 app.use('/vehiculos', require('./routes/vehicles.routes'))
 app.use('/vehiculos/:vehiculoId/documentos', require('./routes/documents.routes'))
+app.use('/documentos/tipos', require('./routes/tipos_documento.routes'))    // ← nuevo
 app.use('/logs', require('./routes/logs.routes'))    // ← nuevo
 
 // ── Ruta 404 ─────────────────────────────────────
