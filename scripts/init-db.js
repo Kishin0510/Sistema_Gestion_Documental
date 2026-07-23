@@ -50,6 +50,7 @@ async function init() {
       modelo      VARCHAR(50) NOT NULL,
       anio        INT,
       color       VARCHAR(30),
+      kilometraje INT DEFAULT 0,
       activo      BOOLEAN DEFAULT TRUE,
       created_at  TIMESTAMP DEFAULT NOW()
     )

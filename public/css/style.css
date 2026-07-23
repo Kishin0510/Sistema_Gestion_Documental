@@ -28,13 +28,28 @@ body {
 .alert-success   { background: #d1fae5; color: #065f46; border: 1px solid #6ee7b7; }
 
 /* Navbar */
-.navbar          { background: #1e3a5f; color: white; padding: 1rem 2rem; display: flex; align-items: center; justify-content: space-between; }
-.navbar-links    { list-style: none; display: flex; gap: 1.5rem; }
-.navbar-links a  { color: white; text-decoration: none; }
-.btn-logout      { background: #ef4444; color: white; padding: .4rem .8rem; border-radius: 4px; text-decoration: none; }
+.navbar *,
+.navbar *::before,
+.navbar *::after { box-sizing: border-box; }
+.navbar          { background: #1e3a5f; color: white; padding: 0 2rem; height: 56px; display: flex; align-items: center; justify-content: space-between; gap: 1rem; border-bottom: 1px solid rgba(255,255,255,0.08); }
+.navbar-brand    { display: flex; align-items: center; gap: 8px; color: white; text-decoration: none; font-size: 15px; font-weight: 600; letter-spacing: -0.01em; white-space: nowrap; flex-shrink: 0; }
+.navbar-brand svg { opacity: 0.85; }
+.navbar-links    { list-style: none; display: flex; align-items: center; gap: 2px; margin: 0; padding: 0; position: absolute; left: 50%; transform: translateX(-50%); }
+.navbar-links a  { display: flex; align-items: center; gap: 6px; color: rgba(255,255,255,0.7); text-decoration: none; font-size: 14px; padding: 6px 12px; border-radius: 6px; transition: background 0.15s, color 0.15s; }
+.navbar-links a:hover { background: rgba(255,255,255,0.1); color: white; }
+.navbar-links a[aria-current="page"] { background: rgba(255,255,255,0.12); color: white; font-weight: 500; }
+.navbar-badge    { font-size: 10px; font-weight: 600; background: rgba(234,179,8,0.2); color: #fde047; padding: 2px 6px; border-radius: 4px; letter-spacing: 0.02em; }
+.navbar-user     { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+.navbar-user-pill { display: flex; align-items: center; gap: 8px; padding: 4px 10px 4px 5px; border-radius: 20px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12); cursor: default; } 
+.navbar-avatar   { width: 26px; height: 26px; border-radius: 50%; background: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; color: white; flex-shrink: 0; } 
+.navbar-user-info { display: flex; flex-direction: column; line-height: 1.2; }
+.navbar-user-name { font-size: 13px; font-weight: 500; color: white; } 
+.navbar-user-role { font-size: 11px; color: rgba(255,255,255,0.5); }
+.btn-logout      { display: flex; align-items: center; gap: 5px; background: transparent; color: rgba(255,255,255,0.65); border: 1px solid rgba(255,255,255,0.2); padding: 5px 12px; border-radius: 6px; text-decoration: none; font-size: 13px; transition: background 0.15s, color 0.15s, border-color 0.15s; } 
+.btn-logout:hover { background: rgba(239,68,68,0.2); color: #fca5a5; border-color: rgba(239,68,68,0.4); }
 
 /* Layout */
-.container       { max-width: 1100px; margin: 2rem auto; padding: 0 1rem; }
+.container       { max-width: 1100px; margin: 0 auto; padding: 2rem 1.5rem; }
 .cards-grid      { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem; margin-top: 1.5rem; }
 .card            { background: white; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
 .card h2         { margin-bottom: .5rem; }
@@ -47,11 +62,16 @@ body {
 .link-forgot     { display: block; text-align: center; margin-top: 1rem; color: #3b82f6; text-decoration: none; font-size: .9rem; }
 
 /* Tablas */
-.tabla            { width: 100%; border-collapse: collapse; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
-.tabla thead      { background: #1e3a5f; color: white; }
-.tabla th, .tabla td { padding: .85rem 1rem; text-align: left; }
-.tabla tbody tr:hover { background: #f0f4ff; }
-.tabla tbody tr   { border-bottom: 1px solid #eee; }
+/* ── Tabla ── */
+.tabla-wrapper             { border: 0.5px solid #e2e0d9; border-radius: 10px; overflow: hidden; } 
+.tabla                     { width: 100%; border-collapse: collapse; font-size: 14px; } 
+.tabla thead               { background: #f5f4f0; border-bottom: 0.5px solid #e2e0d9; } 
+.tabla th                  { padding: 10px 14px; text-align: left; font-size: 12px; font-weight: 600; color: #888780; letter-spacing: 0.04em; text-transform: uppercase; white-space: nowrap; } 
+.tabla th.th-acciones      { text-align: right; }  
+.tabla tbody tr            { border-bottom: 0.5px solid #f0eeea; transition: background 0.1s; } 
+.tabla tbody tr:last-child { border-bottom: none; } 
+.tabla tbody tr:hover      { background: #fafaf8; } 
+.tabla td                  { padding: 12px 14px; color: #2c2c2a; vertical-align: middle; }
 
 /* Botones tamaño pequeño */
 .btn-sm           { padding: .3rem .7rem; font-size: .85rem; }
@@ -64,12 +84,19 @@ body {
 .btn-secondary    { background: #6b7280; color: white; }
 .btn-secondary:hover { background: #4b5563; }
 
+/* ── Botón primario ── */
+.btn.btn-primary       { display: inline-flex; width: auto; align-items: center; gap: 6px; background: #1e3a5f; color: white; font-size: 14px; font-weight: 500; padding: 8px 16px; border-radius: 8px; text-decoration: none; border: none; cursor: pointer; transition: background 0.15s; white-space: nowrap; }
+.btn.btn-primary:hover { background: #16304f; }
+
 /* Acciones en tabla */
 .acciones         { display: flex; gap: .4rem; align-items: center; flex-wrap: wrap; }
 .acciones form    { margin: 0; }
 
 /* Page header */
-.page-header      { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+.page-header       { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.75rem; gap: 1rem; }
+.page-header-text  { display: flex; flex-direction: column; gap: 2px; }
+.page-title        { font-size: 22px; font-weight: 600; color: #1a1917; line-height: 1.2; margin: 0; }
+.page-subtitle     { font-size: 13px; color: #888780; margin: 0; }
 
 /* Filtros */
 .filtros          { margin-bottom: 1.2rem; }
@@ -95,8 +122,20 @@ tr.vigente  { background: #f0fdf4 !important; }
 .badge-danger  { background: #fee2e2; color: #991b1b; padding: .2rem .5rem; border-radius: 4px; font-size: .8rem; }
 
 /* Patente destacada */
-.patente { font-weight: 700; color: #1e3a5f; font-size: 1.1rem; }
-.page-header small { color: #666; font-size: .9rem; margin-left: .5rem; }
+.patente-badge { font-family: 'SF Mono', 'Menlo', 'Consolas', monospace; font-size: 15px; font-weight: 700; color: #1e3a5f; background: #e8f0f8; padding: 4px 10px; border-radius: 6px; letter-spacing: 0.06em; }
+
+/* Marca y modelo apilados */
+.vehiculo-marca { display: block; font-weight: 500; color: #1a1917; font-size: 14px; } 
+.vehiculo-modelo { display: block; font-size: 12px; color: #888780; margin-top: 1px; }
+.vehiculo-header { display: flex; flex-direction: column; gap: 12px; margin-bottom: 1.75rem; }
+.link-back { display: inline-flex; align-items: center; gap: 4px; font-size: 13px; color: #888780; text-decoration: none; transition: color 0.12s; } 
+.link-back:hover { color: #1e3a5f; }
+.vehiculo-header-row { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+.vehiculo-header-info { display: flex; flex-direction: column; gap: 4px; }
+.vehiculo-header-top { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.vehiculo-header-title { font-size: 26px; font-weight: 700; color: #1a1917; margin: 0; line-height: 1.15; letter-spacing: -0.02em; }  
+.vehiculo-anio { font-size: 14px; font-weight: 500; color: #888780; background: #f1efe8; padding: 3px 10px; border-radius: 20px; border: 0.5px solid #e2e0d9; } 
+.vehiculo-header-sub { font-size: 13px; color: #888780; margin: 0; }
 
 /* File upload */
 .file-upload      { display: flex; align-items: center; gap: 1rem; }
@@ -110,6 +149,33 @@ tr.vigente  { background: #f0fdf4 !important; }
 /* Logs */
 .badge-tabla  { background: #e0e7ff; color: #3730a3; padding: .2rem .6rem; border-radius: 4px; font-size: .85rem; }
 .badge-info   { background: #dbeafe; color: #1e40af; padding: .3rem .8rem; border-radius: 4px; font-size: .9rem; }
+
+/* Celdas secundarias */
+.td-muted { color: #888780; }
+
+/* Color con dot */
+.tabla td.td-color { display: table-cell; vertical-align: middle; white-space: nowrap; }
+.td-color-inner { display: inline-flex; align-items: center; gap: 7px; }
+.td-color  { display: flex; align-items: center; gap: 7px; } 
+.color-dot { display: inline-block; width: 11px; height: 11px; border-radius: 50%; border: 1px solid rgba(0,0,0,0.12); flex-shrink: 0; vertical-align: middle; }
+.tabla td.acciones { vertical-align: middle; white-space: nowrap; }
+
+/* ── Acciones ── */
+.acciones      { display: flex; align-items: center; justify-content: flex-end; gap: 6px; flex-wrap: nowrap; }
+.acciones form { display: contents; /* el form no ocupa espacio, el button sí */ }
+.btn-accion    { display: inline-flex; align-items: center; gap: 5px; padding: 5px 10px; border-radius: 6px; font-size: 12.5px; font-weight: 500; text-decoration: none; border: 0.5px solid transparent; cursor: pointer; background: transparent; font-family: inherit; white-space: nowrap; transition: background 0.12s, color 0.12s, border-color 0.12s; }
+
+/* Documentos — azul */
+.btn-accion-info       { color: #185fa5; border-color: #b5d4f4; background: #f0f7ff; }
+.btn-accion-info:hover { background: #dceefb; border-color: #85b7eb; }
+ 
+/* Editar — ámbar */
+.btn-accion-warning       { color: #854f0b; border-color: #fac775; background: #fdf6e8; }
+.btn-accion-warning:hover { background: #faeeda; border-color: #ef9f27; }
+ 
+/* Eliminar — rojo */
+.btn-accion-danger       { color: #a32d2d; border-color: #f7c1c1; background: #fff5f5; }
+.btn-accion-danger:hover { background: #fce8e8; border-color: #f09595; }
 
 /* Alertas secciones */
 .alerta-seccion   { margin-bottom: 2rem; }
@@ -136,7 +202,24 @@ tr.vigente  { background: #f0fdf4 !important; }
 .accion-delete        { background:#fee2e2; color:#ef4444; }
 .accion-default       { background:#f3f4f6; color:#6b7280; }
 
+/* ── Estado vacío ── */
+.empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 4rem 2rem; text-align: center; background: #fafaf9; border: 1px dashed #d3d1c7; border-radius: 12px; }
+.empty-state-icon { color: #b4b2a9; } 
+.empty-state-title { font-size: 16px; font-weight: 500; color: #1a1917; margin: 0; } 
+.empty-state-body { font-size: 14px; color: #888780; margin: 0; max-width: 320px; }
+
 /* Bloque de alertas en Home */
 .alertas-home         { margin: 1.5rem 0 2rem; }
 .alertas-home-titulo  { font-size: 1.1rem; margin-bottom: 1rem;
                         display: flex; align-items: center; gap: .6rem; }
+
+.link-back { display: inline-flex; align-items: center; gap: 5px; font-size: 13px; font-weight: 500; color: #1e3a5f; text-decoration: none; background: #e8f0f8; border: 0.5px solid #b5d4f4; padding: 5px 10px; border-radius: 6px; width: fit-content; transition: background 0.12s, border-color 0.12s; }
+.link-back:hover { background: #dceefb; border-color: #85b7eb; }
+/* ── Responsivo ── */
+@media (max-width: 768px) {
+  .tabla thead      { display: none; } 
+  .tabla tbody tr   { display: flex; flex-direction: column; padding: 12px 14px; gap: 6px; border-bottom: 0.5px solid #e2e0d9; }
+  .tabla td         { padding: 0; display: flex; align-items: center; gap: 8px; }
+  .tabla td::before { content: attr(data-label); font-size: 11px; font-weight: 600; color: #888780; text-transform: uppercase; letter-spacing: 0.04em; min-width: 90px; flex-shrink: 0; }
+  .acciones         { justify-content: flex-start; flex-wrap: wrap; margin-top: 4px; }
+}

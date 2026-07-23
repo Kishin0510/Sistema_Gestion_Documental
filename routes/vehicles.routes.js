@@ -30,7 +30,7 @@ router.post('/agregar',
   verificarSesion,
   verificarRol('admin', 'editor'),
   async (req, res) => {
-    const { patente, marca, modelo, anio, color, responsable } = req.body
+    const { patente, marca, modelo, anio, color, kilometraje } = req.body
 
     if (!patente || !marca || !modelo) {
       return res.render('AddVehicles', {
@@ -41,9 +41,9 @@ router.post('/agregar',
 
     try {
       await db.query(`
-        INSERT INTO vehiculos (patente, marca, modelo, anio, color)
-        VALUES ($1, $2, $3, $4, $5)
-      `, [patente.toUpperCase(), marca, modelo, anio, color])
+        INSERT INTO vehiculos (patente, marca, modelo, anio, color, kilometraje)
+        VALUES ($1, $2, $3, $4, $5, $6)
+      `, [patente.toUpperCase(), marca, modelo, anio, color,  kilometraje || 0])
 
       await db.query(`
         INSERT INTO logs_cambio (tabla, accion, descripcion, usuario_id)
@@ -83,15 +83,28 @@ router.post('/editar/:id',
   verificarSesion,
   verificarRol('admin', 'editor'),
   async (req, res) => {
-    const { patente, marca, modelo, anio, color, responsable } = req.body
+    const { patente, marca, modelo, anio, color, kilometraje } = req.body
 
     try {
+      const { rows } = await db.query('SELECT kilometraje FROM vehiculos WHERE id = $1', [req.params.id])
+      if (!rows[0]) return res.render('error', { mensaje: 'Vehículo no encontrado' })
+
+      const kmActual = rows[0].kilometraje
+      const kmNuevo = parseInt(kilometraje, 10)
+
+      if (isNaN(kmNuevo) || kmNuevo < kmActual) {
+        return res.render('AddVehicles', {
+          vehiculo: { id: req.params.id, patente, marca, modelo, anio, color, kilometraje, responsable },
+          error: `El kilometraje no puede ser menor al actual (${kmActual} km)`
+        })
+      }
+
       await db.query(`
         UPDATE vehiculos
-        SET patente=$1, marca=$2, modelo=$3, anio=$4, color=$5, responsable=$6
-        WHERE id=$7
-      `, [patente.toUpperCase(), marca, modelo, anio, color, responsable, req.params.id])
-
+        SET patente=$1, marca=$2, modelo=$3, anio=$4, color=$5, kilometraje=$6, responsable=$7
+        WHERE id=$8
+      `, [patente.toUpperCase(), marca, modelo, anio, color, kmNuevo, responsable, req.params.id])
+      
       await db.query(`
         INSERT INTO logs_cambio (tabla, accion, descripcion, usuario_id)
         VALUES ('vehiculos', 'UPDATE', $1, $2)

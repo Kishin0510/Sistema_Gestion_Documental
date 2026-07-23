@@ -22,12 +22,13 @@
                  value="<%= vehiculo ? vehiculo.patente : '' %>"
                  placeholder="ABCD12" required
                  style="text-transform:uppercase" />
-        </div>
-        <div class="form-group">
-          <label>Responsable</label>
-          <input type="text" name="responsable"
-                 value="<%= vehiculo ? vehiculo.responsable : '' %>"
-                 placeholder="Nombre del conductor o encargado" />
+          <label>Kilometraje <%= vehiculo ? '' : '(opcional)' %></label>
+          <input type="number" name="kilometraje"
+                value="<%= vehiculo ? vehiculo.kilometraje : 0 %>"
+                placeholder="0" min="0" />
+          <% if (vehiculo) { %>
+            <small class="form-hint">No puede ser menor al kilometraje actual registrado.</small>
+          <% } %>
         </div>
       </div>
 
