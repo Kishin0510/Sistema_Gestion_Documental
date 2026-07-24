@@ -14,6 +14,7 @@
   <div class="form-card">
     <form method="POST"
           action="<%= vehiculo ? '/vehiculos/editar/' + vehiculo.id : '/vehiculos/agregar' %>">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
 
       <div class="form-row">
         <div class="form-group">
@@ -64,7 +65,7 @@
 
       <div class="form-actions">
         <button type="submit" class="btn btn-primary">
-          <%= vehiculo ? '💾 Guardar cambios' : '➕ Agregar vehículo' %>
+          <%= vehiculo ? 'Guardar cambios' : 'Agregar vehículo' %>
         </button>
       </div>
 

@@ -5,6 +5,7 @@ const fs     = require('fs')
 const db     = require('../db')
 const upload = require('../storage')
 const { verificarSesion, verificarRol } = require('../middlewares/auth.middleware')
+const { csrfProtectionAfterMulter }     = require('../middlewares/csrf.middleware')
 
 // ── GET /vehiculos/:vehiculoId/documentos ────────
 router.get('/', verificarSesion, async (req, res) => {
@@ -80,6 +81,12 @@ router.post('/agregar',
   verificarSesion,
   verificarRol('admin', 'editor'),
   upload.single('archivo'),
+  (req, res, next) => {
+    console.log("BODY:", req.body);
+    console.log("_csrf:", JSON.stringify(req.body._csrf));
+    next();
+  },
+  csrfProtectionAfterMulter, // el body multipart recién existe después de multer
   async (req, res) => {
     const { vehiculoId } = req.params
     const { nombre, tipo_id, fecha_emision, fecha_vencimiento } = req.body

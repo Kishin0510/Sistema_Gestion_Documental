@@ -23,6 +23,7 @@
     <form method="POST"
           action="/vehiculos/<%= vehiculo.id %>/documentos/agregar"
           enctype="multipart/form-data">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
 
       <div class="form-row">
         <div class="form-group">
@@ -68,7 +69,7 @@
 
       <div class="form-actions">
         <button type="submit" class="btn btn-primary">
-          ⬆️ Subir documento
+          Subir documento
         </button>
         <a href="/vehiculos/<%= vehiculo.id %>/documentos"
            class="btn btn-secondary">

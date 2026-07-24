@@ -12,7 +12,7 @@
     <h1>🚗 Sistema de Gestión</h1>
     <h2>Iniciar Sesión</h2>
 
-    <% if (typeof error !== 'undefined') { %>
+    <% if (typeof error !== 'undefined' && error) { %>
       <div class="alert alert-error">
         <%= error %>
       </div>
@@ -25,6 +25,8 @@
     <% } %>
 
     <form method="POST" action="/login">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+
       <div class="form-group">
         <label for="email">Email</label>
         <input
@@ -46,11 +48,11 @@
           required
         />
       </div>
-
-      <button type="submit" class="btn btn-primary">
-        Ingresar
-      </button>
-
+      <div class="button-container">
+        <button type="submit" class="btn btn-primary">
+          Ingresar
+        </button>
+      </div>
       <a href="/reset-password" class="link-forgot">
         ¿Olvidaste tu contraseña?
       </a>

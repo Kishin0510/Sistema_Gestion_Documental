@@ -17,67 +17,67 @@
         🔔 Alertas de vencimiento
         <span class="badge-danger"><%= alertas.length %></span>
       </h2>
+      <div class="alertas-scroll">
+        <!-- Vencidos -->
+        <% if (vencidos.length > 0) { %>
+          <% vencidos.forEach(a => { %>
+            <div class="alerta-card card-vencido">
+              <div class="alerta-card-info">
+                <strong><%= a.nombre %></strong>
+                <span>🚗 <%= a.patente %> — <%= a.marca %> <%= a.modelo %></span>
+                <span>📅 Venció el <%= new Date(a.fecha_vencimiento).toLocaleDateString('es-CL') %></span>
+              </div>
+              <div class="alerta-card-estado">
+                <span class="badge-danger">Venció hace <%= Math.abs(a.diff) %> días</span>
+                <a href="/vehiculos/<%= a.vehiculo_id %>/documentos"
+                  class="btn btn-sm btn-info" style="margin-top:.5rem;">
+                  Ver documentos
+                </a>
+              </div>
+            </div>
+          <% }) %>
+        <% } %>
 
-      <!-- Vencidos -->
-      <% if (vencidos.length > 0) { %>
-        <% vencidos.forEach(a => { %>
-          <div class="alerta-card card-vencido">
-            <div class="alerta-card-info">
-              <strong><%= a.nombre %></strong>
-              <span>🚗 <%= a.patente %> — <%= a.marca %> <%= a.modelo %></span>
-              <span>📅 Venció el <%= new Date(a.fecha_vencimiento).toLocaleDateString('es-CL') %></span>
+        <!-- Próximos a vencer -->
+        <% if (proximos.length > 0) { %>
+          <% proximos.forEach(a => { %>
+            <div class="alerta-card card-proximo">
+              <div class="alerta-card-info">
+                <strong><%= a.nombre %></strong>
+                <span>🚗 <%= a.patente %> — <%= a.marca %> <%= a.modelo %></span>
+                <span>📅 Vence el <%= new Date(a.fecha_vencimiento).toLocaleDateString('es-CL') %></span>
+              </div>
+              <div class="alerta-card-estado">
+                <span class="badge-warning">Vence en <%= a.diff %> días</span>
+                <a href="/vehiculos/<%= a.vehiculo_id %>/documentos"
+                  class="btn btn-sm btn-info" style="margin-top:.5rem;">
+                  Ver documentos
+                </a>
+              </div>
             </div>
-            <div class="alerta-card-estado">
-              <span class="badge-danger">Venció hace <%= Math.abs(a.diff) %> días</span>
-              <a href="/vehiculos/<%= a.vehiculo_id %>/documentos"
-                 class="btn btn-sm btn-info" style="margin-top:.5rem;">
-                Ver documentos
-              </a>
-            </div>
-          </div>
-        <% }) %>
-      <% } %>
+          <% }) %>
+        <% } %>
 
-      <!-- Próximos a vencer -->
-      <% if (proximos.length > 0) { %>
-        <% proximos.forEach(a => { %>
-          <div class="alerta-card card-proximo">
-            <div class="alerta-card-info">
-              <strong><%= a.nombre %></strong>
-              <span>🚗 <%= a.patente %> — <%= a.marca %> <%= a.modelo %></span>
-              <span>📅 Vence el <%= new Date(a.fecha_vencimiento).toLocaleDateString('es-CL') %></span>
+        <!-- Advertencia 30-60 días -->
+        <% if (advertencia.length > 0) { %>
+          <% advertencia.forEach(a => { %>
+            <div class="alerta-card card-advertencia">
+              <div class="alerta-card-info">
+                <strong><%= a.nombre %></strong>
+                <span>🚗 <%= a.patente %> — <%= a.marca %> <%= a.modelo %></span>
+                <span>📅 Vence el <%= new Date(a.fecha_vencimiento).toLocaleDateString('es-CL') %></span>
+              </div>
+              <div class="alerta-card-estado">
+                <span class="badge-warning">Vence en <%= a.diff %> días</span>
+                <a href="/vehiculos/<%= a.vehiculo_id %>/documentos"
+                  class="btn btn-sm btn-info" style="margin-top:.5rem;">
+                  Ver documentos
+                </a>
+              </div>
             </div>
-            <div class="alerta-card-estado">
-              <span class="badge-warning">Vence en <%= a.diff %> días</span>
-              <a href="/vehiculos/<%= a.vehiculo_id %>/documentos"
-                 class="btn btn-sm btn-info" style="margin-top:.5rem;">
-                Ver documentos
-              </a>
-            </div>
-          </div>
-        <% }) %>
-      <% } %>
-
-      <!-- Advertencia 30-60 días -->
-      <% if (advertencia.length > 0) { %>
-        <% advertencia.forEach(a => { %>
-          <div class="alerta-card card-advertencia">
-            <div class="alerta-card-info">
-              <strong><%= a.nombre %></strong>
-              <span>🚗 <%= a.patente %> — <%= a.marca %> <%= a.modelo %></span>
-              <span>📅 Vence el <%= new Date(a.fecha_vencimiento).toLocaleDateString('es-CL') %></span>
-            </div>
-            <div class="alerta-card-estado">
-              <span class="badge-warning">Vence en <%= a.diff %> días</span>
-              <a href="/vehiculos/<%= a.vehiculo_id %>/documentos"
-                 class="btn btn-sm btn-info" style="margin-top:.5rem;">
-                Ver documentos
-              </a>
-            </div>
-          </div>
-        <% }) %>
-      <% } %>
-
+          <% }) %>
+        <% } %>
+      </div>      
     </div>
   <% } %>
 

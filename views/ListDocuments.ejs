@@ -109,6 +109,7 @@
                 <form method="POST"
                       action="/vehiculos/<%= vehiculo.id %>/documentos/eliminar/<%= d.id %>"
                       onsubmit="return confirm('¿Eliminar <%= d.nombre %>?')">
+                  <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
                   <button class="btn btn-sm btn-danger">🗑️ Eliminar</button>
                 </form>
               <% } %>

@@ -2,20 +2,21 @@ const router = require('express').Router()
 const bcrypt = require('bcryptjs')
 const db     = require('../db')
 const { verificarSesion } = require('../middlewares/auth.middleware')
+const { loginLimiter }    = require('../middlewares/rateLimit.middleware')
 
 
 // ── GET /login ───────────────────────────────────
 router.get('/login', (req, res) => {
   if (req.session.user) return res.redirect('/')
-  res.render('Login')
+  res.render('Login', { error: null })
 })
 
 // ── POST /login ──────────────────────────────────
-router.post('/login', async (req, res) => {
+router.post('/login', loginLimiter, async (req, res) => {
   const { email, password } = req.body
 
   if (!email || !password) {
-    return res.render('Login', { error: 'Completa todos los campos' })
+    return res.status(400).render('Login', { error: 'Completa todos los campos' })
   }
 
   try {
@@ -37,17 +38,17 @@ router.post('/login', async (req, res) => {
     const user = rows[0]
 
     if (!user) {
-      return res.render('Login', { error: 'Email o contraseña incorrectos' })
+      return res.status(401).render('Login', { error: 'Email o contraseña incorrectos' })
     }
 
     // Verificar si la cuenta está activa
     if (!user.activo) {
-      return res.render('Login', { error: 'Cuenta desactivada, contacta al administrador' })
+      return res.status(403).render('Login', { error: 'Cuenta desactivada, contacta al administrador' })
     }
 
     const passwordOk = bcrypt.compareSync(password, user.password)
     if (!passwordOk) {
-      return res.render('Login', { error: 'Email o contraseña incorrectos' })
+      return res.status(401).render('Login', { error: 'Email o contraseña incorrectos' })
     }
 
     // Sesión con rol incluido
@@ -67,7 +68,7 @@ router.post('/login', async (req, res) => {
 
   } catch (err) {
     console.error('Error en login:', err)
-    res.render('Login', { error: 'Error del servidor, intenta de nuevo' })
+    res.status(500).render('Login', { error: 'Error del servidor, intenta de nuevo' })
   }
 })
 

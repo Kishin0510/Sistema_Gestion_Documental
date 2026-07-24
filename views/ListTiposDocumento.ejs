@@ -21,6 +21,7 @@
   <!-- Formulario para agregar nuevo tipo -->
   <div class="form-card" style="margin-bottom:1.75rem;">
     <form method="POST" action="/documentos/tipos/agregar" style="display:flex; gap:1rem; align-items:flex-end; flex-wrap:wrap;">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
       <div class="form-group" style="flex:1; min-width:240px; margin-bottom:0;">
         <label>Nombre del nuevo tipo *</label>
         <input type="text" name="nombre"
@@ -62,6 +63,7 @@
                     method="POST"
                     action="/documentos/tipos/editar/<%= t.id %>"
                     style="display:none; gap:.4rem; align-items:center;">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
                 <input type="text" name="nombre" value="<%= t.nombre %>"
                        required style="padding:.3rem .5rem; border:1px solid #ddd; border-radius:4px;" />
                 <button type="submit" class="btn btn-sm btn-primary">Guardar</button>
@@ -84,6 +86,7 @@
               <form method="POST"
                     action="/documentos/tipos/eliminar/<%= t.id %>"
                     onsubmit="return confirm('¿Eliminar el tipo &quot;<%= t.nombre %>&quot;?<%= t.documentos_count > 0 ? (' Está usado en ' + t.documentos_count + ' documento(s); quedarán sin tipo asignado.') : '' %>')">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
                 <button class="btn btn-sm btn-danger">🗑️ Eliminar</button>
               </form>
             </td>

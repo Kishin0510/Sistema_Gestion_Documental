@@ -94,16 +94,16 @@ router.post('/editar/:id',
 
       if (isNaN(kmNuevo) || kmNuevo < kmActual) {
         return res.render('AddVehicles', {
-          vehiculo: { id: req.params.id, patente, marca, modelo, anio, color, kilometraje, responsable },
+          vehiculo: { id: req.params.id, patente, marca, modelo, anio, color, kilometraje },
           error: `El kilometraje no puede ser menor al actual (${kmActual} km)`
         })
       }
 
       await db.query(`
         UPDATE vehiculos
-        SET patente=$1, marca=$2, modelo=$3, anio=$4, color=$5, kilometraje=$6, responsable=$7
+        SET patente=$1, marca=$2, modelo=$3, anio=$4, color=$5, kilometraje=$6
         WHERE id=$8
-      `, [patente.toUpperCase(), marca, modelo, anio, color, kmNuevo, responsable, req.params.id])
+      `, [patente.toUpperCase(), marca, modelo, anio, color, kmNuevo])
       
       await db.query(`
         INSERT INTO logs_cambio (tabla, accion, descripcion, usuario_id)
