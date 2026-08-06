@@ -1,41 +1,50 @@
-<%- include('partials/header', { title: 'Tipos de Documento' }) %>
+<%- include('partials/header', { title: 'Documentos' }) %>
 <%- include('partials/navbar') %>
 
-<main class="container">
+<div class="container">
 
   <div class="page-header">
-    <div>
-      <a href="/vehiculos" class="link-back">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
-        Volver a vehículos
-      </a>
-      <h1>🏷️ Tipos de Documento</h1>
+    <div class="page-header-text">
+      <h1 class="page-title">Documentos</h1>
+      <p class="page-subtitle"><%= tipos.length %> tipos de documentos</p>
     </div>
-    <span class="badge-info"><%= tipos.length %> tipos</span>
+      <!-- Botón para mostrar/ocultar formulario -->
+    <button type="button"
+      class="btn btn-primary"
+      id="toggleFormBtn"
+      onclick="toggleTipoForm()"
+      style="display:flex; align-items:center; gap:0.4rem;">
+      <svg id="toggleIcon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="transition: transform 0.2s ease;">
+        <line x1="12" y1="5" x2="12" y2="19"/>
+        <line x1="5" y1="12" x2="19" y2="12"/>
+      </svg>
+        Agregar tipo
+    </button>
+  </div>
+  <!-- Contenedor colapsable -->
+  <div id="tipoFormWrapper" style="max-height:0; overflow:hidden; transition:max-height 0.3s ease;">
+    <div class="form-card" style="margin-top:0.75rem; margin-bottom: 0.75rem;">
+      <form method="POST" action="/documentos/tipos/agregar" style="display:flex; align-items:flex-end; flex-wrap:wrap; gap:1rem;">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+        <div class="form-group" style="flex:1; min-width:200px; margin-bottom:0;">
+          <label>Nombre del nuevo tipo</label>
+          <input type="text" name="nombre"
+                placeholder="Ej: Certificado de Inspección"
+                required />
+        </div>
+        <div class="form-actions" style="margin-top:0;">
+          <button type="submit" class="btn btn-primary">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Guardar
+          </button>
+        </div>
+      </form>
+    </div>
   </div>
 
   <% if (error) { %>
     <div class="alert alert-error"><%= error %></div>
   <% } %>
-
-  <!-- Formulario para agregar nuevo tipo -->
-  <div class="form-card" style="margin-bottom:1.75rem;">
-    <form method="POST" action="/documentos/tipos/agregar" style="display:flex; gap:1rem; align-items:flex-end; flex-wrap:wrap;">
-      <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
-      <div class="form-group" style="flex:1; min-width:240px; margin-bottom:0;">
-        <label>Nombre del nuevo tipo *</label>
-        <input type="text" name="nombre"
-               placeholder="Ej: Certificado de Inspección"
-               required />
-      </div>
-      <div class="form-actions" style="margin-top:0;">
-        <button type="submit" class="btn btn-primary">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          Agregar tipo
-        </button>
-      </div>
-    </form>
-  </div>
 
   <!-- Tabla de tipos existentes -->
   <% if (tipos.length === 0) { %>
@@ -43,57 +52,59 @@
       <p>Aún no hay tipos de documento registrados.</p>
     </div>
   <% } else { %>
-    <table class="tabla">
-      <thead>
-        <tr>
-          <th>Nombre</th>
-          <th>Documentos asociados</th>
-          <th class="th-acciones">Acciones</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% tipos.forEach(t => { %>
+    <div class="tabla-wrapper">
+      <table class="tabla">
+        <thead>
           <tr>
-            <td>
-              <!-- Vista normal -->
-              <span id="nombre-view-<%= t.id %>"><%= t.nombre %></span>
-
-              <!-- Formulario de edición (oculto por defecto) -->
-              <form id="nombre-edit-<%= t.id %>"
-                    method="POST"
-                    action="/documentos/tipos/editar/<%= t.id %>"
-                    style="display:none; gap:.4rem; align-items:center;">
-                <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
-                <input type="text" name="nombre" value="<%= t.nombre %>"
-                       required style="padding:.3rem .5rem; border:1px solid #ddd; border-radius:4px;" />
-                <button type="submit" class="btn btn-sm btn-primary">Guardar</button>
-                <button type="button" class="btn btn-sm btn-secondary"
-                        onclick="cancelarEdicion('<%= t.id %>')">Cancelar</button>
-              </form>
-            </td>
-            <td>
-              <% if (t.documentos_count > 0) { %>
-                <span class="badge-tabla"><%= t.documentos_count %> documento<%= t.documentos_count === 1 ? '' : 's' %></span>
-              <% } else { %>
-                <span style="color:#999;">—</span>
-              <% } %>
-            </td>
-            <td class="acciones">
-              <button type="button" class="btn btn-sm btn-secondary"
-                      onclick="editarTipo('<%= t.id %>')">
-                ✏️ Editar
-              </button>
-              <form method="POST"
-                    action="/documentos/tipos/eliminar/<%= t.id %>"
-                    onsubmit="return confirm('¿Eliminar el tipo &quot;<%= t.nombre %>&quot;?<%= t.documentos_count > 0 ? (' Está usado en ' + t.documentos_count + ' documento(s); quedarán sin tipo asignado.') : '' %>')">
-                <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
-                <button class="btn btn-sm btn-danger">🗑️ Eliminar</button>
-              </form>
-            </td>
+            <th>Nombre</th>
+            <th>Documentos asociados</th>
+            <th class="th-acciones">Acciones</th>
           </tr>
-        <% }) %>
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          <% tipos.forEach(t => { %>
+            <tr>
+              <td>
+                <!-- Vista normal -->
+                <span id="nombre-view-<%= t.id %>"><%= t.nombre %></span>
+
+                <!-- Formulario de edición (oculto por defecto) -->
+                <form id="nombre-edit-<%= t.id %>"
+                      method="POST"
+                      action="/documentos/tipos/editar/<%= t.id %>"
+                      style="display:none; gap:.4rem; align-items:center;">
+                  <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+                  <input type="text" name="nombre" value="<%= t.nombre %>"
+                        required style="padding:.3rem .5rem; border:1px solid #ddd; border-radius:4px;" />
+                  <button type="submit" class="btn btn-sm btn-primary">Guardar</button>
+                  <button type="button" class="btn btn-sm btn-secondary"
+                          onclick="cancelarEdicion('<%= t.id %>')">Cancelar</button>
+                </form>
+              </td>
+              <td>
+                <% if (t.documentos_count > 0) { %>
+                  <span class="badge-tabla"><%= t.documentos_count %> documento<%= t.documentos_count === 1 ? '' : 's' %></span>
+                <% } else { %>
+                  <span style="color:#999;">—</span>
+                <% } %>
+              </td>
+              <td class="acciones">
+                <button type="button" class="btn btn-sm btn-secondary"
+                        onclick="editarTipo('<%= t.id %>')">
+                  ✏️ Editar
+                </button>
+                <form method="POST"
+                      action="/documentos/tipos/eliminar/<%= t.id %>"
+                      onsubmit="return confirm('¿Eliminar el tipo &quot;<%= t.nombre %>&quot;?<%= t.documentos_count > 0 ? (' Está usado en ' + t.documentos_count + ' documento(s); quedarán sin tipo asignado.') : '' %>')">
+                  <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+                  <button class="btn btn-sm btn-danger">🗑️ Eliminar</button>
+                </form>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
   <% } %>
 
 </main>
@@ -109,6 +120,25 @@
     document.getElementById('nombre-view-' + id).style.display = 'inline'
     document.getElementById('nombre-edit-' + id).style.display = 'none'
   }
+
+  function toggleTipoForm() {
+    const wrapper = document.getElementById('tipoFormWrapper');
+    const icon = document.getElementById('toggleIcon');
+    const isOpen = wrapper.style.maxHeight && wrapper.style.maxHeight !== '0px';
+
+    if (isOpen) {
+      wrapper.style.maxHeight = '0px';
+      icon.style.transform = 'rotate(0deg)';
+    } else {
+      wrapper.style.maxHeight = wrapper.scrollHeight + 'px';
+      icon.style.transform = 'rotate(45deg)';
+      // Foco automático al input al abrir
+      setTimeout(() => {
+        wrapper.querySelector('input[name="nombre"]')?.focus();
+      }, 300);
+    }
+  }
+
 </script>
 
 <%- include('partials/footer') %>

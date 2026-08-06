@@ -6,11 +6,13 @@ const db     = require('../db')
 const upload = require('../storage')
 const { verificarSesion, verificarRol } = require('../middlewares/auth.middleware')
 const { csrfProtectionAfterMulter }     = require('../middlewares/csrf.middleware')
+const { parsePagination, buildPageInfo } = require('../utils/pagination')
 
 // ── GET /vehiculos/:vehiculoId/documentos ────────
 router.get('/', verificarSesion, async (req, res) => {
   try {
     const { vehiculoId } = req.params
+    const { page, pageSize, offset } = parsePagination(req.query)
 
     // Traer vehículo
     const { rows: vehiculoArr } = await db.query(
@@ -20,7 +22,7 @@ router.get('/', verificarSesion, async (req, res) => {
       return res.render('error', { mensaje: 'Vehículo no encontrado' })
     }
 
-    // Traer documentos del vehículo
+    // Traer documentos del vehículo (paginado)
     const { rows: documentos } = await db.query(`
       SELECT
         d.*,
@@ -31,7 +33,12 @@ router.get('/', verificarSesion, async (req, res) => {
       LEFT JOIN usuarios  u ON u.id = d.uploaded_by
       WHERE d.vehiculo_id = $1
       ORDER BY d.created_at DESC
-    `, [vehiculoId])
+      LIMIT $2 OFFSET $3
+    `, [vehiculoId, pageSize, offset])
+
+    const { rows: [{ count }] } = await db.query(
+      'SELECT COUNT(*) FROM documentos WHERE vehiculo_id = $1', [vehiculoId]
+    )
 
     // Traer tipos para el filtro
     const { rows: tipos } = await db.query(
@@ -41,7 +48,8 @@ router.get('/', verificarSesion, async (req, res) => {
     res.render('ListDocuments', {
       documentos,
       vehiculo: vehiculoArr[0],
-      tipos
+      tipos,
+      pagination: buildPageInfo(page, pageSize, count)
     })
 
   } catch (err) {
@@ -81,11 +89,6 @@ router.post('/agregar',
   verificarSesion,
   verificarRol('admin', 'editor'),
   upload.single('archivo'),
-  (req, res, next) => {
-    console.log("BODY:", req.body);
-    console.log("_csrf:", JSON.stringify(req.body._csrf));
-    next();
-  },
   csrfProtectionAfterMulter, // el body multipart recién existe después de multer
   async (req, res) => {
     const { vehiculoId } = req.params
@@ -119,32 +122,48 @@ router.post('/agregar',
     }
 
     try {
-      await db.query(`
-        INSERT INTO documentos
-          (nombre, archivo_nombre, archivo_ruta, tipo_id, vehiculo_id,
-           fecha_emision, fecha_vencimiento, uploaded_by)
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-      `, [
-        nombre,
-        req.file.filename,
-        req.file.path,
-        tipo_id,
-        vehiculoId,
-        fecha_emision     || null,
-        fecha_vencimiento || null,
-        req.session.user.id
-      ])
+      await db.transaction(async (client) => {
+        await client.query(`
+          INSERT INTO documentos
+            (nombre, archivo_nombre, archivo_ruta, tipo_id, vehiculo_id,
+             fecha_emision, fecha_vencimiento, uploaded_by)
+          VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+        `, [
+          nombre,
+          req.file.filename,
+          req.file.path,
+          tipo_id,
+          vehiculoId,
+          fecha_emision     || null,
+          fecha_vencimiento || null,
+          req.session.user.id
+        ])
 
-      await db.query(`
-        INSERT INTO logs_cambio (tabla, accion, descripcion, usuario_id)
-        VALUES ('documentos', 'INSERT', $1, $2)
-      `, [`Documento subido: ${nombre}`, req.session.user.id])
+        await client.query(`
+          INSERT INTO logs_cambio (tabla, accion, descripcion, usuario_id)
+          VALUES ('documentos', 'INSERT', $1, $2)
+        `, [`Documento subido: ${nombre}`, req.session.user.id])
+      })
 
       res.redirect(`/vehiculos/${vehiculoId}/documentos`)
 
     } catch (err) {
       console.error(err)
-      res.render('error', { mensaje: 'Error al guardar documento' })
+
+      // multer ya escribió el archivo en disco antes de que corriera esta
+      // ruta; si la transacción falla (ej. tipo_id inválido), no debe
+      // quedar un archivo huérfano sin registro en la base de datos.
+      if (req.file?.path && fs.existsSync(req.file.path)) {
+        fs.unlink(req.file.path, (unlinkErr) => {
+          if (unlinkErr) console.error('No se pudo limpiar archivo huérfano:', unlinkErr)
+        })
+      }
+
+      const { vehiculo, tipos } = await cargarFormData()
+      res.status(500).render('AddDocuments', {
+        vehiculo, tipos,
+        error: 'Error al guardar el documento. Intenta de nuevo.'
+      })
     }
   }
 )
@@ -215,5 +234,6 @@ router.post('/eliminar/:id',
     }
   }
 )
+
 
 module.exports = router

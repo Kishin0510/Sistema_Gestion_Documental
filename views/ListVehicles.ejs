@@ -7,7 +7,7 @@
   <div class="page-header">
     <div class="page-header-text">
       <h1 class="page-title">Vehículos</h1>
-      <p class="page-subtitle"><%= vehiculos.length %> vehículo<%= vehiculos.length !== 1 ? 's' : '' %> registrado<%= vehiculos.length !== 1 ? 's' : '' %></p>
+      <p class="page-subtitle"><%= pagination.total %> vehículo<%= pagination.total !== 1 ? 's' : '' %> registrado<%= pagination.total !== 1 ? 's' : '' %></p>
     </div>
     <% if (user.rol === 'admin' || user.rol === 'editor') { %>
       <a href="/vehiculos/agregar" class="btn btn-primary">
@@ -18,7 +18,7 @@
   </div>
 
   <!-- ── Estado vacío ── -->
-  <% if (vehiculos.length === 0) { %>
+  <% if (vehiculosConHex.length === 0) { %>
     <div class="empty-state">
       <div class="empty-state-icon" aria-hidden="true">
         <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 17H3a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h1"/><path d="M17 17h2a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-1"/><path d="M5 9h14l-1.5-4.5A2 2 0 0 0 15.6 3H8.4a2 2 0 0 0-1.9 1.5L5 9Z"/><circle cx="7.5" cy="17" r="2.5"/><circle cx="16.5" cy="17" r="2.5"/></svg>
@@ -45,7 +45,7 @@
           </tr>
         </thead>
         <tbody>
-          <% vehiculos.forEach(v => { %>
+          <% vehiculosConHex.forEach(v => { %>
             <tr>
               <td>
                 <span class="patente-badge"><%= v.patente %></span>
@@ -58,7 +58,7 @@
               <td class="td-color">
                 <% if (v.color) { %>
                   <div class="td-color-inner">
-                    <span class="color-dot" data-color="<%= v.colorHex || '#aaaaaa' %>" aria-hidden="true"></span>
+                    <span class="color-dot" style="background-color: <%= v.colorHex || '#aaaaaa' %>;" aria-hidden="true"></span>
                     <%= v.color %>
                   </div>
                 <% } else { %>
@@ -96,6 +96,8 @@
       </table>
     </div>
   <% } %>
+
+  <%- include('partials/pagination', { pagination, baseUrl: '/vehiculos' }) %>
 
 </main>
 

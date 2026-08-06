@@ -1,14 +1,17 @@
 require('dotenv').config()
-const express = require('express')
-const session = require('express-session')
+const express      = require('express')
+const session      = require('express-session')
+const pgSession     = require('connect-pg-simple')(session)
 const morgan  = require('morgan')
 const path    = require('path')
 const helmet  = require('helmet')
 
+const db = require('./db')
 const { csrfProtection }            = require('./middlewares/csrf.middleware')
 const { loginLimiter, generalLimiter } = require('./middlewares/rateLimit.middleware')
 
 const app = express()
+
 
 // ── Motor de vistas ──────────────────────────────
 app.set('view engine', 'ejs')
@@ -46,6 +49,12 @@ app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 app.use(express.static(path.join(__dirname, 'public'), { maxAge: '1d' }))
 app.use(session({
+  store: new pgSession({
+    pool:            db.pool,
+    tableName:       'session',
+    createTableIfMissing: true, // red de seguridad si init-db no corrió aún
+    pruneSessionInterval: 60 * 15, // limpia sesiones expiradas cada 15 min
+  }),
   secret:            process.env.SESSION_SECRET,
   resave:            false,
   saveUninitialized: false,
@@ -66,7 +75,6 @@ app.use(generalLimiter)
 app.use(csrfProtection)
 app.use((req, res, next) => {
   // Disponible en todas las vistas como <%= csrfToken %>
-  console.log("csrfToken:", req.csrfToken ? req.csrfToken() : "NO EXISTE");
   res.locals.csrfToken = req.csrfToken ? req.csrfToken() : null
   next()
 })
@@ -75,8 +83,10 @@ app.use((req, res, next) => {
 app.use('/', require('./routes/auth.routes'))
 app.use('/vehiculos', require('./routes/vehicles.routes'))
 app.use('/vehiculos/:vehiculoId/documentos', require('./routes/documents.routes'))
-app.use('/documentos/tipos', require('./routes/tipos_documento.routes'))    // ← nuevo
-app.use('/logs', require('./routes/logs.routes'))    // ← nuevo
+app.use('/documentos/tipos', require('./routes/tipos_documento.routes'))    
+app.use('/usuarios', require('./routes/usuarios.routes'))    
+app.use('/logs', require('./routes/logs.routes'))    
+app.use('/documentos', require('./routes/alldocuments.routes'))
 
 // ── Ruta 404 ─────────────────────────────────────
 app.use((req, res) => {

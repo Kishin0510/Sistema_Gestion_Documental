@@ -105,7 +105,7 @@
                  class="btn btn-sm btn-info">
                 ⬇️ Descargar
               </a>
-              <% if (user.rol === 'admin') { %>
+              <% if (user.rol === 'admin' || user.rol === 'editor') { %>
                 <form method="POST"
                       action="/vehiculos/<%= vehiculo.id %>/documentos/eliminar/<%= d.id %>"
                       onsubmit="return confirm('¿Eliminar <%= d.nombre %>?')">
@@ -119,6 +119,8 @@
       </tbody>
     </table>
   <% } %>
+
+  <%- include('partials/pagination', { pagination, baseUrl: '/vehiculos/' + vehiculo.id + '/documentos' }) %>
 
 </main>
 

@@ -110,6 +110,19 @@ await db.query(`
 `)
 console.log('Tabla documentos creada')
 
+  // ── Tabla session (usada por connect-pg-simple para persistir sesiones) ──
+  await db.query(`
+    CREATE TABLE IF NOT EXISTS "session" (
+      "sid"    VARCHAR NOT NULL COLLATE "default" PRIMARY KEY,
+      "sess"   JSON NOT NULL,
+      "expire" TIMESTAMP(6) NOT NULL
+    )
+  `)
+  await db.query(`
+    CREATE INDEX IF NOT EXISTS "IDX_session_expire" ON "session" ("expire")
+  `)
+  console.log('Tabla session creada')
+
   // ── 6. Crear usuario admin por defecto ──────────
   const hash = bcrypt.hashSync('admin123', 10)
 

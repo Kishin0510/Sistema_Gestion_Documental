@@ -1,0 +1,35 @@
+<%
+// Espera recibir `pagination` = { page, pageSize, total, totalPages, hasPrev, hasNext, from, to }
+// y `baseUrl` = ruta actual sin query string, ej: '/vehiculos'
+// Los demás query params activos (ej. filtros) se pueden pasar en `extraQuery`, ej: '&tipo=3'
+const _extraQuery = typeof extraQuery !== 'undefined' ? extraQuery : ''
+%>
+<% if (pagination.total > 0) { %>
+  <div class="pagination">
+    <span class="pagination-info">
+      Mostrando <%= pagination.from %>–<%= pagination.to %> de <%= pagination.total %>
+    </span>
+
+    <div class="pagination-controls">
+      <% if (pagination.hasPrev) { %>
+        <a class="btn btn-sm btn-secondary"
+           href="<%= baseUrl %>?page=<%= pagination.page - 1 %>&pageSize=<%= pagination.pageSize %><%= _extraQuery %>">
+          ← Anterior
+        </a>
+      <% } else { %>
+        <span class="btn btn-sm btn-secondary btn-disabled">← Anterior</span>
+      <% } %>
+
+      <span class="pagination-page">Página <%= pagination.page %> de <%= pagination.totalPages %></span>
+
+      <% if (pagination.hasNext) { %>
+        <a class="btn btn-sm btn-secondary"
+           href="<%= baseUrl %>?page=<%= pagination.page + 1 %>&pageSize=<%= pagination.pageSize %><%= _extraQuery %>">
+          Siguiente →
+        </a>
+      <% } else { %>
+        <span class="btn btn-sm btn-secondary btn-disabled">Siguiente →</span>
+      <% } %>
+    </div>
+  </div>
+<% } %>
